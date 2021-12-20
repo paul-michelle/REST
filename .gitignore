@@ -1,0 +1,7 @@
+.env
+venv/
+db.sqlite3
+chromedriver
+.idea
+*.pyc
+__pycache__
