@@ -1,0 +1,45 @@
+version: "3"
+
+services:
+
+  nginx:
+    image: nginx:1.17
+    restart: unless-stopped
+    volumes:
+      - ./data/nginx_dev:/etc/nginx/conf.d
+      - static_volume:/home/street_food/web/staticfiles
+      - media_volume:/home/street_food/web/mediafiles
+    ports:
+      - 8000:80
+    depends_on:
+      - web
+  web:
+    env_file:
+      - web_prod.env
+    image: lieberpaul/tickets:1.1
+    volumes:
+      - static_volume:/home/street_food/web/staticfiles
+      - media_volume:/home/street_food/web/mediafiles
+    expose:
+      - 8000
+    depends_on:
+      - db
+
+  db:
+    env_file:
+      - db_prod.env
+    image: postgres:13-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8001:8080
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

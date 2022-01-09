@@ -1,7 +1,10 @@
-.env
+web_prod.env
+db_prod.env
+
 venv/
-db.sqlite3
-chromedriver
+
 .idea
 *.pyc
 __pycache__
+
+db.sqlite3
