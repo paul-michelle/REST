@@ -3,7 +3,7 @@ version: "3"
 services:
 
   nginx:
-    image: nginx:1.17
+    image: nginx:1.21-alpine
     restart: unless-stopped
     volumes:
       - ./data/nginx_dev:/etc/nginx/conf.d
@@ -16,7 +16,7 @@ services:
   web:
     env_file:
       - web_prod.env
-    image: lieberpaul/tickets:1.1
+    image: tickets_app:1.1.1
     volumes:
       - static_volume:/home/street_food/web/staticfiles
       - media_volume:/home/street_food/web/mediafiles

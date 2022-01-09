@@ -1,5 +1,4 @@
-web_prod.env
-db_prod.env
+*.env
 
 venv/
 
