@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /usr/src/web
 
-RUN apk update && apk add postgresql-dev gcc libc-dev
+RUN apk update && apk add postgresql-dev gcc libc-dev libffi-dev
 COPY ./requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/web/wheels -r requirements.txt
 
@@ -27,9 +27,9 @@ COPY --from=builder /usr/src/web/wheels /wheels
 COPY --from=builder /usr/src/web/requirements.txt .
 RUN pip install -U pip && pip install --no-cache /wheels/*
 
-COPY ./entrypoint.prod.sh .
-RUN sed -i 's/\r$//g' $APP_HOME/entrypoint.prod.sh
-RUN chmod +x $APP_HOME/entrypoint.prod.sh
+COPY ./entrypoint.dev.sh .
+RUN sed -i 's/\r$//g' $APP_HOME/entrypoint.dev.sh
+RUN chmod +x $APP_HOME/entrypoint.dev.sh
 
 COPY . $APP_HOME
 
@@ -37,4 +37,4 @@ RUN chown -R street_food:street_food $APP_HOME
 
 USER street_food
 
-ENTRYPOINT ["/home/street_food/web/entrypoint.prod.sh"]
+ENTRYPOINT ["sh", "/home/street_food/web/entrypoint.dev.sh"]

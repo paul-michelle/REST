@@ -29,7 +29,7 @@ services:
   web:
     env_file:
       - web_prod.env
-    image: tickets_app:1.1
+    image: lieberpaul/tickets:latest
     volumes:
       - static_volume:/home/street_food/web/staticfiles
       - media_volume:/home/street_food/web/mediafiles

@@ -13,10 +13,9 @@ services:
       - 8000:80
     depends_on:
       - web
+
   web:
-    env_file:
-      - web_prod.env
-    image: tickets_app:1.1.1
+    image: lieberpaul/tickets:latest
     volumes:
       - static_volume:/home/street_food/web/staticfiles
       - media_volume:/home/street_food/web/mediafiles
@@ -24,14 +23,26 @@ services:
       - 8000
     depends_on:
       - db
+      - db_nosql
 
   db:
-    env_file:
-      - db_prod.env
+    environment:
+      - POSTGRES_USER=street_food_dev
+      - POSTGRES_PASSWORD=street_food_dev
+      - POSTGRES_DB=street_food_dev
     image: postgres:13-alpine
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+
+  db_nosql:
+    image: mongo:4.4.11-focal
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=street_food_dev
+      - MONGO_INITDB_ROOT_PASSWORD=street_food_dev
+    restart: always
+    volumes:
+      - mongo_data:/var/lib/mongodb/data/
 
   adminer:
     image: adminer
@@ -41,5 +52,6 @@ services:
 
 volumes:
   postgres_data:
+  mongo_data:
   static_volume:
   media_volume:

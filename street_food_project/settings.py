@@ -1,14 +1,15 @@
 import os
+import mongoengine
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEV_SECRET_KEY = "ta=]/}1]z'#nl]$%%!}wb'y.9{+|q$m`8|iubxi~`..[i>nhdd"
 SECRET_KEY = os.environ.get("SECRET_KEY", DEV_SECRET_KEY)
 
-DEBUG = int(os.environ.get("DEBUG"))
+DEBUG = int(os.environ.get("DEBUG", "1"))
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(" ")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost 127.0.0.1").split(" ")
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://127.0.0.1:8000 http://localhost:8000").split(" ")
 CORS_ALLOW_ALL_ORIGINS = False
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
@@ -23,8 +24,9 @@ INSTALLED_APPS = [
 
     'rest_framework_swagger',
     'rest_framework',
-    'street_food_app.apps.StreetFoodAppConfig',
+    'rest_framework_mongoengine',
 
+    'street_food_app.apps.StreetFoodAppConfig',
 ]
 
 MIDDLEWARE = [
@@ -71,14 +73,23 @@ SQLITE_PATH = 'db.sqlite3' if DEBUG else '../database/db.sqlite3'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('SQL_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': os.getenv('SQL_DB', os.path.join(BASE_DIR, SQLITE_PATH)),
-        'USER': os.getenv('SQL_USER', 'user'),
-        'PASSWORD': os.getenv('SQL_PASSWORD', 'password'),
-        'HOST': os.getenv('SQL_HOST', 'localhost'),
-        'PORT': os.getenv('SQL_PORT', '5432'),
+        'ENGINE': os.getenv('SQL_ENGINE', 'django.db.backends.postgresql_psycopg2'),
+        'NAME': os.getenv('SQL_DB', 'street_food_dev'),
+        'USER': os.getenv('SQL_USER', 'street_food_dev'),
+        'PASSWORD': os.getenv('SQL_PASSWORD', 'street_food_dev'),
+        'HOST': os.getenv('SQL_HOST', 'db'),
+        'PORT': int(os.getenv('SQL_PORT', '5432')),
     }
 }
+
+mongoengine.connect(
+    db=os.environ.get('MONGO_DATABASE_NAME', 'street_food_dev'),
+    username=os.environ.get('MONGO_USERNAME', 'street_food_dev'),
+    password=os.environ.get('MONGO_PASSWORD', 'street_food_dev'),
+    host=os.environ.get('MONGO_HOST', 'db_nosql'),
+    port=int(os.environ.get('MONGO_PORT', '27017')),
+    authentication_source='admin',
+)
 
 AUTH_PASSWORD_VALIDATORS = [
     {
