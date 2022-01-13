@@ -1,5 +1,7 @@
 import os
 import mongoengine
+import street_food_project.tasks
+from celery.schedules import crontab
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -30,7 +32,13 @@ INSTALLED_APPS = [
 ]
 
 CELERY_BROKER_URL = 'redis://redis:6379'
-CELERY_RESULT_BACKEND = 'redis://redis:6389'
+CELERY_RESULT_BACKEND = 'redis://redis:6379'
+CELERY_BEAT_SCHEDULE = {
+    'testing': {
+        'task': 'street_food_project.tasks.log_me',
+        'schedule': crontab(minute='*/1'),
+    }
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -71,8 +79,6 @@ REST_FRAMEWORK = {
 }
 
 WSGI_APPLICATION = 'street_food_project.wsgi.application'
-
-SQLITE_PATH = 'db.sqlite3' if DEBUG else '../database/db.sqlite3'
 
 DATABASES = {
     'default': {

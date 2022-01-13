@@ -36,5 +36,3 @@ COPY . $APP_HOME
 RUN chown -R street_food:street_food $APP_HOME
 
 USER street_food
-
-ENTRYPOINT ["sh", "/home/street_food/web/entrypoint.dev.sh"]

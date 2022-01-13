@@ -24,7 +24,4 @@ echo "from django.contrib.auth import get_user_model;\
   User.objects.create_superuser('whoami','who@m.i', 'whoami')" |
   python manage.py shell
 
-echo "Starting server"
-gunicorn street_food_project.wsgi:application --bind 0.0.0.0:8000
-
 exec "$@"

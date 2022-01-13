@@ -16,12 +16,11 @@ services:
 
   web:
     image: lieberpaul/tickets:latest
+    entrypoint: ["sh", "/home/street_food/web/entrypoint.dev.sh"]
+    command: gunicorn street_food_project.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_volume:/home/street_food/web/staticfiles
       - media_volume:/home/street_food/web/mediafiles
-    command: >
-      sh -c "celery -A street_food_project worker -l info &&
-             celery -A street_food_project beat -l info"
     expose:
       - 8000
     depends_on:
@@ -56,6 +55,18 @@ services:
 
   redis:
     image: redis:6.0-alpine3.14
+
+  celery:
+    image: lieberpaul/tickets:latest
+    command: celery -A street_food_project worker -E -l info
+    depends_on:
+      - redis
+
+  celery_beat:
+    image: lieberpaul/tickets:latest
+    command: celery -A street_food_project beat -l info
+    depends_on:
+      - redis
 
 volumes:
   postgres_data:
