@@ -29,6 +29,9 @@ INSTALLED_APPS = [
     'street_food_app.apps.StreetFoodAppConfig',
 ]
 
+CELERY_BROKER_URL = 'redis://redis:6379'
+CELERY_RESULT_BACKEND = 'redis://redis:6389'
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
