@@ -1,10 +1,11 @@
 *.env
 *.yaml
 *.yml
-init-letsencrypt.shell
 data/
 Dockerfile
 .dockerignore
+rename*
+entrypoint.prod.sh
 
 .git
 .gitignore
@@ -14,4 +15,4 @@ db.sqlite3
 
 .idea
 *.pyc
-__pycache__
+__pycache__/

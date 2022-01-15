@@ -12,8 +12,8 @@ services:
       - static_volume:/home/street_food/web/staticfiles
       - media_volume:/home/street_food/web/mediafiles
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     depends_on:
       - web
@@ -30,6 +30,8 @@ services:
     env_file:
       - web_prod.env
     image: lieberpaul/tickets:latest
+    entrypoint: [ "sh", "/home/street_food/web/entrypoint.prod.sh" ]
+    command: gunicorn street_food_project.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_volume:/home/street_food/web/staticfiles
       - media_volume:/home/street_food/web/mediafiles
@@ -37,16 +39,45 @@ services:
       - 8000
     depends_on:
       - db
+      - db_nosql
+      - redis
 
   db:
+    image: postgres:13-alpine
     env_file:
       - db_prod.env
-    image: postgres:13-alpine
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
+  db_nosql:
+    image: mongo:4.4.11-focal
+    env_file:
+      - db_prod.env
+    restart: always
+    volumes:
+      - mongo_data:/var/lib/mongodb/data/
+
+  redis:
+    image: redis:6.0-alpine3.14
+
+  celery:
+    image: lieberpaul/tickets:latest
+    restart: always
+    entrypoint: [ "sh", "/home/street_food/web/entrypoint.celery.sh" ]
+    depends_on:
+      - redis
+
+
+  celery_beat:
+    image: lieberpaul/tickets:latest
+    restart: always
+    entrypoint: [ "sh", "/home/street_food/web/entrypoint.celery-beat.sh" ]
+    depends_on:
+      - redis
+
 volumes:
   postgres_data:
+  mongo_data:
   static_volume:
   media_volume:

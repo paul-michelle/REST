@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /usr/src/web
 
-RUN apk update && apk add postgresql-dev gcc libc-dev libffi-dev
+RUN apk update --no-cache && apk add postgresql-dev gcc libc-dev libffi-dev jpeg-dev zlib-dev linux-headers make
 COPY ./requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/web/wheels -r requirements.txt
 
@@ -27,12 +27,11 @@ COPY --from=builder /usr/src/web/wheels /wheels
 COPY --from=builder /usr/src/web/requirements.txt .
 RUN pip install -U pip && pip install --no-cache /wheels/*
 
-COPY ./entrypoint.dev.sh .
-RUN sed -i 's/\r$//g' $APP_HOME/entrypoint.dev.sh
-RUN chmod +x $APP_HOME/entrypoint.dev.sh
+COPY {./entrypoint.dev.sh,./entrypoint.celery.sh,./entrypoint.celery-beat.sh} .
+RUN sed -i 's/\r$//g' $APP_HOME/entrypoint.dev.sh $APP_HOME/entrypoint.celery.sh $APP_HOME/entrypoint.celery-beat.sh
+RUN chmod +x $APP_HOME/entrypoint.dev.sh $APP_HOME/entrypoint.celery.sh $APP_HOME/entrypoint.celery-beat.sh
 
 COPY . $APP_HOME
 
 RUN chown -R street_food:street_food $APP_HOME
-
 USER street_food

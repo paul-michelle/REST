@@ -1,7 +1,6 @@
 import os
-import mongoengine
-import street_food_project.tasks
-from celery.schedules import crontab
+from . import developmet_db_creds as dev_db
+from mongoengine import connect
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -27,18 +26,20 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'rest_framework',
     'rest_framework_mongoengine',
+    'django_celery_beat',
 
     'street_food_app.apps.StreetFoodAppConfig',
 ]
 
-CELERY_BROKER_URL = 'redis://redis:6379'
-CELERY_RESULT_BACKEND = 'redis://redis:6379'
-CELERY_BEAT_SCHEDULE = {
-    'testing': {
-        'task': 'street_food_project.tasks.log_me',
-        'schedule': crontab(minute='*/1'),
-    }
-}
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://redis:6379")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://redis:6379")
+if CELERY_RESULT_BACKEND == 'django-db':
+    INSTALLED_APPS += ['django_celery_results', ]
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Minsk'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -82,21 +83,21 @@ WSGI_APPLICATION = 'street_food_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('SQL_ENGINE', 'django.db.backends.postgresql_psycopg2'),
-        'NAME': os.getenv('SQL_DB', 'street_food_dev'),
-        'USER': os.getenv('SQL_USER', 'street_food_dev'),
-        'PASSWORD': os.getenv('SQL_PASSWORD', 'street_food_dev'),
-        'HOST': os.getenv('SQL_HOST', 'db'),
-        'PORT': int(os.getenv('SQL_PORT', '5432')),
+        'ENGINE': os.getenv('SQL_ENGINE', dev_db.SQL_ENGINE),
+        'NAME': os.getenv('SQL_DB', dev_db.SQL_DB),
+        'USER': os.getenv('SQL_USER', dev_db.SQL_USER),
+        'PASSWORD': os.getenv('SQL_PASSWORD', dev_db.SQL_PASSWORD),
+        'HOST': os.getenv('SQL_HOST', dev_db.SQL_HOST),
+        'PORT': int(os.getenv('SQL_PORT', dev_db.SQL_PORT)),
     }
 }
 
-mongoengine.connect(
-    db=os.environ.get('MONGO_DATABASE_NAME', 'street_food_dev'),
-    username=os.environ.get('MONGO_USERNAME', 'street_food_dev'),
-    password=os.environ.get('MONGO_PASSWORD', 'street_food_dev'),
-    host=os.environ.get('MONGO_HOST', 'db_nosql'),
-    port=int(os.environ.get('MONGO_PORT', '27017')),
+connect(
+    db=os.environ.get('MONGO_DATABASE_NAME', dev_db.MONGO_DATABASE_NAME),
+    username=os.environ.get('MONGO_USERNAME', dev_db.MONGO_USERNAME),
+    password=os.environ.get('MONGO_PASSWORD', dev_db.MONGO_PASSWORD),
+    host=os.environ.get('MONGO_HOST', dev_db.MONGO_HOST),
+    port=int(os.environ.get('MONGO_PORT', dev_db.MONGO_PORT)),
     authentication_source='admin',
 )
 

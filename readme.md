@@ -1,30 +1,39 @@
-# UN Street Food Incentive
-#### Back-end for the project's software support
+### RUNNING WITH DOCKER
 
-### INTRO
-The UN project us supposed to `improve the street food catering` of a country
-by giving a customer an opportunity to assess the quality of the street
-food vendors of their country/town of residence. Since those using the software
-support of the UN incentive (which is the app in question here) may leave their
-complaints (so called 'flags'), it is expected that the overall quality of the services
-will rise. 
+Since there is a bunch of services (App  with Databases, Nginx with Certbot, Celery and Celery-Beat with Redis) 
+it makes sense to run them in containers via a composition.
+So, make sure you have [docker](https://www.docker.com/) and docker-compose installed on the machine.
 
-Each `stack-holder is given a particular role` on the software platform which
-is being developed: customers, operators, managers, and - last not least -
-vendor themselves.
+With docker istalled, cd to the working directory and - for development purposes - run:
+```
+$ docker-compose -f docker-compose.dev.yaml up -d
+```
+This way, you will pull the already built image of the django-based project - as well as all the
+other necessary images - and run them in daemon mode. Visit the localhost at port 8000.
 
-### BACK_END's GOAL
-The back-end part of the software shall guarantee `efficient saving, storing, and 
-providing` on demand the information on all the stack-holders using the app, with 
-reference to their roles and, therefore, `access control levels`.
+Alternatively, you can make an image by yourself - especially when further changes to the program
+made and need to be fixed as an image - staying in the working directory and running:
+```
+$ docker build -t <image name> .
+```
+If you preferred to change the image name or version, you will need to amend the docker-compose
+file, substituting the image's default name with the one you gave it in the "docker build" command.
 
-### BACK_END's STACK
+### DEPLOYING WITH DOCKER
 
-The back-end support is written in Python, with `Django Rest Framework`
-on top of `Django3`, feat `MongoDB` and `PostgreSQL`.
+Running yours services in production will not differ a lot what has been
+done in development. You will have to add to the working directory two 
+environment variables files: `.web_prod.env` and `.db_prod.env`. If you prefer to
+give other names to those files, amend the docker-compose.prod.yaml file, 
+providing new files' names in the `env_file:` sections. If stick to the default names, let 
+us immediately move further.
 
-Other technologies: `Selenium`, `Celery`, `Docker`.
+Those `rename_web_prod_env.py` and `rename_db_prod_env.py` files are here for
+your convenience. Fill in the variables listed in them, remove whitespaces before
+and after assignment `=`, and rename the files to `.web_prod.env` and `.db_prod.env`.
+Make sure the databases' variables in .db_prod.env match those in .web_prod.env.
 
-The code is to be DRY, self-documented, and covered with tests,
-making for easier maintenance in the future.
+On your production server run:
+```
+$ docker-compose -f docker-compose.prod.yaml up -d
 

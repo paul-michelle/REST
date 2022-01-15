@@ -1,0 +1,12 @@
+SQL_ENGINE = 'django.db.backends.postgresql_psycopg2'
+SQL_DB = 'street_food_dev'
+SQL_USER = 'street_food_dev'
+SQL_PASSWORD = 'street_food_dev'
+SQL_HOST = 'db'
+SQL_PORT = '5432'
+
+MONGO_DATABASE_NAME = 'street_food_dev'
+MONGO_USERNAME = 'street_food_dev'
+MONGO_PASSWORD = 'street_food_dev'
+MONGO_HOST = 'db_nosql'
+MONGO_PORT = '27017'
