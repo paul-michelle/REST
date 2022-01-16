@@ -2,16 +2,13 @@
 *.yaml
 *.yml
 data/
-Dockerfile
-.dockerignore
 rename*
-entrypoint.prod.sh
+Dockerfile
 
+venv/
 .git
 .gitignore
 *.md
-venv/
-db.sqlite3
 
 .idea
 *.pyc
