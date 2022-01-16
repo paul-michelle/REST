@@ -20,8 +20,13 @@ MONGO_PORT = ""
 MONGO_USERNAME = ""
 MONGO_PASSWORD = ""
 
-EMAIL_HOST_USER = "email to send messages from"
+EMAIL_HOST_USER = "administrative back-end email to send messages from"
 EMAIL_HOST_PASSWORD = "password to this email account"
+EMAIL_INTERVAL_SECONDS = "set it here or, which is more handy, - in the powerful admin cabinet"
+
+ADMIN_NAME = ""
+ADMIN_EMAIL = "valid@email.here"
+ADMIN_PASSWORD = ""
 
 
 def generate_key():
