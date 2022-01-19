@@ -5,7 +5,7 @@ if ! [ -x "$(command -v docker-compose)" ]; then
   exit 1
 fi
 
-domains=(app.paul-michelle.art www.app.paul-michelle.art)
+domains=(tickets.paul-michelle.art www.tickets.paul-michelle.art)
 data_path="./data/certbot"
 email="lieber.paul.git@gmail.com"
 

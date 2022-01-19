@@ -4,7 +4,7 @@ services:
 
   nginx:
     image: nginx:1.21-alpine
-    restart: unless-stopped
+    restart: always
     volumes:
       - ./data/nginx:/etc/nginx/conf.d
       - ./data/certbot/conf:/etc/letsencrypt
@@ -20,7 +20,7 @@ services:
 
   certbot:
     image: certbot/certbot
-    restart: unless-stopped
+    restart: always
     volumes:
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
@@ -29,7 +29,7 @@ services:
   web:
     env_file:
       - web_prod.env
-    image: lieberpaul/tickets:latest
+    image: lieberpaul/tickets:mongoCluster
     entrypoint: [ "sh", "/home/street_food/web/entrypoint.prod.sh" ]
     command: gunicorn street_food_project.wsgi:application --bind 0.0.0.0:8000
     volumes:
@@ -39,7 +39,6 @@ services:
       - 8000
     depends_on:
       - db
-      - db_nosql
       - redis
 
   db:
@@ -50,19 +49,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
-  db_nosql:
-    image: mongo:4.4.11-focal
-    env_file:
-      - db_prod.env
-    restart: always
-    volumes:
-      - mongo_data:/var/lib/mongodb/data/
-
   redis:
     image: redis:6.0-alpine3.14
 
   celery:
-    image: lieberpaul/tickets:latest
+    env_file:
+      - web_prod.env
+    image: lieberpaul/tickets:mongoCluster
     restart: always
     entrypoint: [ "sh", "/home/street_food/web/entrypoint.celery.sh" ]
     depends_on:
@@ -70,7 +63,9 @@ services:
 
 
   celery_beat:
-    image: lieberpaul/tickets:latest
+    env_file:
+      - web_prod.env
+    image: lieberpaul/tickets:mongoCluster
     restart: always
     entrypoint: [ "sh", "/home/street_food/web/entrypoint.celery-beat.sh" ]
     depends_on:
@@ -78,6 +73,5 @@ services:
 
 volumes:
   postgres_data:
-  mongo_data:
   static_volume:
   media_volume:

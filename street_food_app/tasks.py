@@ -1,5 +1,5 @@
 import sys
-from typing import List, Type
+from typing import List, Dict, Any
 from datetime import datetime
 from dataclasses import dataclass, asdict
 from celery import shared_task
@@ -39,9 +39,9 @@ class TicketInfo:
     assigned_to: DeveloperInfo
 
 
-def get_info_on_latest_tickets(count) -> List[TicketInfo]:
+def get_info_on_latest_tickets(count) -> List[Dict[str, Any]]:
 
-    info: List[TicketInfo]
+    info: List[Dict[str, Any]]
     info = list()
 
     for ticket in Ticket.objects.all().order_by('-id')[:count]:
@@ -70,6 +70,6 @@ def send_mail_on_latest_tickets(count) -> None:
         'Your tickets',
         str(get_info_on_latest_tickets(count)),
         'from@example.com',
-        ['streetfoodincentive@gmail.com'],
+        ['lieber.paul.git@gmail.com'],
         fail_silently=False,
     )
