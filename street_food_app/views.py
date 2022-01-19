@@ -28,14 +28,19 @@ def ticket_list_or_create_next(request: HttpRequest) -> rest_framework.response.
         return rest_framework.response.Response(data)
 
     if request.method == 'POST':
-        data_to_store_as_doc = request.data.pop('developer')
+        developer_info = request.data.pop('developer')
         serializer_sql = TicketSerializer(data=request.data)
-        serializer_nosql = DeveloperSerializer(data=data_to_store_as_doc)
+        serializer_nosql = DeveloperSerializer(data=developer_info)
+
+        serializer_sql.is_valid()
+        serializer_nosql.is_valid()
 
         if serializer_sql.is_valid() and serializer_nosql.is_valid():
             serializer_sql.save()
-            serializer_nosql.save()
+            if not Developer.objects.get(github_account=developer_info['github_account']):
+                serializer_nosql.save()
             data = [serializer_sql.data, serializer_nosql.data]
             return rest_framework.response.Response(data=data, status=status.HTTP_201_CREATED)
+
         errors = [serializer_sql.errors, serializer_nosql.errors]
         return rest_framework.response.Response(data=errors, status=status.HTTP_400_BAD_REQUEST)

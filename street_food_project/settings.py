@@ -1,5 +1,5 @@
 import os
-from . import developmet_db_creds as dev_db
+from . import dev_db_creds as dev_db
 from mongoengine import connect
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -92,14 +92,20 @@ DATABASES = {
     }
 }
 
-connect(
-    db=os.environ.get('MONGO_DATABASE_NAME', dev_db.MONGO_DATABASE_NAME),
-    username=os.environ.get('MONGO_USERNAME', dev_db.MONGO_USERNAME),
-    password=os.environ.get('MONGO_PASSWORD', dev_db.MONGO_PASSWORD),
-    host=os.environ.get('MONGO_HOST', dev_db.MONGO_HOST),
-    port=int(os.environ.get('MONGO_PORT', dev_db.MONGO_PORT)),
-    authentication_source='admin',
-)
+if os.environ.get("MONGO_CLUSTER_URL"):
+    connect(
+        host=os.environ.get("MONGO_CLUSTER_URL"),
+    )
+
+if not os.environ.get("MONGO_CLUSTER_URL"):
+    connect(
+        db=os.environ.get('MONGO_DATABASE_NAME', dev_db.MONGO_DATABASE_NAME),
+        username=os.environ.get('MONGO_USERNAME', dev_db.MONGO_USERNAME),
+        password=os.environ.get('MONGO_PASSWORD', dev_db.MONGO_PASSWORD),
+        host=os.environ.get('MONGO_HOST', dev_db.MONGO_HOST),
+        port=int(os.environ.get('MONGO_PORT', dev_db.MONGO_PORT)),
+        authentication_source='admin',
+    )
 
 AUTH_PASSWORD_VALIDATORS = [
     {

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Waiting for databases to start accepting connections..."
-while ! nc -z "$SQL_HOST" "$SQL_PORT" && ! nc -z "$MONGO_HOST" "$MONGO_PORT"; do
+while ! nc -z "$SQL_HOST" "$SQL_PORT"; do
   sleep 0.33
 done
 echo "Databases launched..."

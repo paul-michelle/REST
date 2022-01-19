@@ -10,6 +10,7 @@ django-cors-headers==3.10.1
 django-rest-swagger==2.2.0
 djangorestframework==3.13.1
 django-rest-framework-mongoengine==3.4.1
+dnspython==2.2.0
 gunicorn==20.1.0
 idna==3.3
 inflection==0.5.1

@@ -15,15 +15,15 @@ services:
       - web
 
   web:
-    image: lieberpaul/tickets:latest
+    image: lieberpaul/tickets:mongoCluster
     environment:
       - SQL_HOST=db
       - SQL_PORT=5432
-      - MONGO_HOST=db_nosql
-      - MONGO_PORT=27017
       - ADMIN_NAME=admin
       - ADMIN_PASSWORD=admin
       - ADMIN_EMAIL=admin@admin.org
+    env_file:
+      - ./web_dev.env
     entrypoint: [ "sh", "/home/street_food/web/entrypoint.dev.sh" ]
     command: gunicorn street_food_project.wsgi:application --bind 0.0.0.0:8000
     expose:
@@ -33,7 +33,6 @@ services:
       - media_volume:/home/street_food/web/mediafiles
     depends_on:
       - db
-      - db_nosql
       - redis
 
   db:
@@ -47,31 +46,25 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
-  db_nosql:
-    image: mongo:4.4.11-focal
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=street_food_dev
-      - MONGO_INITDB_ROOT_PASSWORD=street_food_dev
-    restart: always
-    volumes:
-      - mongo_data:/var/lib/mongodb/data/
-
   redis:
     image: redis:6.0-alpine3.14
 
   celery:
-    image: lieberpaul/tickets:latest
+    image: lieberpaul/tickets:mongoCluster
+    env_file:
+      - ./web_dev.env
     restart: always
     entrypoint: [ "sh", "/home/street_food/web/entrypoint.celery.sh" ]
 
 
   celery_beat:
-    image: lieberpaul/tickets:latest
+    image: lieberpaul/tickets:mongoCluster
+    env_file:
+      - ./web_dev.env
     restart: always
     entrypoint: [ "sh", "/home/street_food/web/entrypoint.celery-beat.sh" ]
 
 volumes:
   postgres_data:
-  mongo_data:
   static_volume:
   media_volume:
