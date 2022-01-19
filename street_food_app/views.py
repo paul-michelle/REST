@@ -1,5 +1,6 @@
 import rest_framework.response
 import rest_framework.request
+from mongoengine.errors import DoesNotExist
 from django.http import HttpRequest
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -37,7 +38,9 @@ def ticket_list_or_create_next(request: HttpRequest) -> rest_framework.response.
 
         if serializer_sql.is_valid() and serializer_nosql.is_valid():
             serializer_sql.save()
-            if not Developer.objects.get(github_account=developer_info['github_account']):
+            try:
+                Developer.objects.get(github_account=developer_info['github_account'])
+            except DoesNotExist:
                 serializer_nosql.save()
             data = [serializer_sql.data, serializer_nosql.data]
             return rest_framework.response.Response(data=data, status=status.HTTP_201_CREATED)
