@@ -72,10 +72,13 @@ def ticket_read_update_delete_one(request: HttpRequest, pk: int) -> rest_framewo
         return rest_framework.response.Response(status=status.HTTP_204_NO_CONTENT)
 
     if request.method == 'GET':
-        return rest_framework.response.Response(data=b'GET method will be allowed soon', status=status.HTTP_200_OK)
+        serialized_ticket = TicketSerializer(ticket_requested)
+        serialized_developer = DeveloperSerializer(developer_requested)
+        data = serialized_ticket.data
+        data.update(serialized_developer.data)
+        return rest_framework.response.Response(data=data, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
-        return rest_framework.response.Response(data=b'PUT method will be allowed soon',
-                                                status=status.HTTP_204_NO_CONTENT)
+        return rest_framework.response.Response(status=status.HTTP_204_NO_CONTENT)
 
     return rest_framework.response.Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
