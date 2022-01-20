@@ -10,12 +10,12 @@ app.config_from_object("django.conf:settings", namespace='CELERY')
 app.conf.beat_schedule = {
     "every_hour": {
         'task': 'street_food_app.tasks.log_tickets_total',
-        'schedule': timedelta(seconds=10),
+        'schedule': timedelta(hours=1),
     },
     "every_day": {
         'task': 'street_food_app.tasks.send_mail_on_latest_tickets',
         'args': (3,),
-        'schedule': timedelta(seconds=15),
+        'schedule': timedelta(days=1),
     }
 }
 

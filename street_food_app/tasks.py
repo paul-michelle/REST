@@ -1,11 +1,17 @@
+import json
 import sys
 from typing import List, Dict, Any
-from datetime import datetime
-from dataclasses import dataclass, asdict
+from dataclasses import asdict
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.core.mail import send_mail
 from mongoengine.errors import DoesNotExist
+
+from street_food_app.datatypes import (
+    ExpertiseInfo,
+    DeveloperInfo,
+    TicketInfo,
+)
 
 from street_food_app.models import (
     Ticket,
@@ -15,35 +21,8 @@ from street_food_app.models import (
 logger = get_task_logger(__name__)
 
 
-@dataclass
-class ExpertiseInfo:
-    language_name: str
-    experience: float
-    description: str
-
-
-Url = str
-
-
-@dataclass
-class DeveloperInfo:
-    first_name: str
-    github_account: Url
-    stack: List[ExpertiseInfo]
-
-
-@dataclass
-class TicketInfo:
-    created: datetime
-    title: str
-    description: str
-    points: int
-    assigned_to: DeveloperInfo
-
-
 def get_info_on_latest_tickets(count) -> List[Dict[str, Any]]:
-
-    info: List[Dict[str, Any]]
+    info: List[json]
     info = list()
 
     if Ticket.objects.count():
@@ -56,10 +35,19 @@ def get_info_on_latest_tickets(count) -> List[Dict[str, Any]]:
             stack_info = [
                 ExpertiseInfo(stack_obj.language_name, stack_obj.experience, stack_obj.description)
                 for stack_obj in stack_objs
-                          ]
+            ]
             developer_info = DeveloperInfo(developer_obj.first_name, developer_obj.github_account, stack_info)
-            single_ticket_info = TicketInfo(ticket.created, ticket.title, ticket.description, ticket.points, developer_info)
-            info.append(asdict(single_ticket_info))
+            single_ticket_info = asdict(
+                TicketInfo(
+                    ticket.created,
+                    ticket.title,
+                    ticket.description,
+                    ticket.points,
+                    developer_info
+                )
+            )
+
+            info.append(json.dumps(single_ticket_info, indent=4))
 
     return info
 

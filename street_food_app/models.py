@@ -24,7 +24,8 @@ class Ticket(models.Model):
     title = models.CharField(max_length=55, default=DEFAULT_TICKET_TITLE)
     description = models.TextField(default=DEFAULT_TICKET_DESCRIPTION)
     points = models.IntegerField(default=1)
-    assigned_to = models.URLField(default=DEFAULT_GITHUB_ACCOUNT)
+    assigned_to = models.URLField()
+
     objects = models.Manager()
 
     class Meta:

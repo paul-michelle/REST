@@ -9,6 +9,9 @@ SPRINT_POINTS_CEILING = 10
 
 
 class TicketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ['id', 'created', 'title', 'description', 'points']
 
     def validate(self, attrs) -> None:
         points: int
@@ -19,12 +22,9 @@ class TicketSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('Points upper limit for the current sprint reached')
         return attrs
 
-    class Meta:
-        model = Ticket
-        fields = '__all__'
-
 
 class DeveloperSerializer(DocumentSerializer):
     class Meta:
         model = Developer
+        fields = ['first_name', 'github_account', 'stack', 'hobbies']
         depth = 1
