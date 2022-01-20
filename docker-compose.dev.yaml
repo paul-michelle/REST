@@ -16,12 +16,6 @@ services:
 
   web:
     image: lieberpaul/tickets:mongoCluster
-    environment:
-      - SQL_HOST=db
-      - SQL_PORT=5432
-      - ADMIN_NAME=admin
-      - ADMIN_PASSWORD=admin
-      - ADMIN_EMAIL=admin@admin.org
     env_file:
       - ./web_dev.env
     entrypoint: [ "sh", "/home/street_food/web/entrypoint.dev.sh" ]

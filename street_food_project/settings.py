@@ -1,6 +1,14 @@
 import os
-from . import dev_db_creds as dev_db
 from mongoengine import connect
+from sentry_sdk import init as sentry_sdk_init
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk_init(
+    dsn="https://d56e9fae059c433e97bf1b45d0660fd8@o1122018.ingest.sentry.io/6159210",
+    integrations=[DjangoIntegration()],
+    traces_sample_rate=float(os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "1.0")),
+    send_default_pii=True
+)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -31,8 +39,8 @@ INSTALLED_APPS = [
     'street_food_app.apps.StreetFoodAppConfig',
 ]
 
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://redis:6379")
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://redis:6379")
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
 if CELERY_RESULT_BACKEND == 'django-db':
     INSTALLED_APPS += ['django_celery_results', ]
 CELERY_ACCEPT_CONTENT = ['application/json']
@@ -83,29 +91,18 @@ WSGI_APPLICATION = 'street_food_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('SQL_ENGINE', dev_db.SQL_ENGINE),
-        'NAME': os.getenv('SQL_DB', dev_db.SQL_DB),
-        'USER': os.getenv('SQL_USER', dev_db.SQL_USER),
-        'PASSWORD': os.getenv('SQL_PASSWORD', dev_db.SQL_PASSWORD),
-        'HOST': os.getenv('SQL_HOST', dev_db.SQL_HOST),
-        'PORT': int(os.getenv('SQL_PORT', dev_db.SQL_PORT)),
+        'ENGINE': os.getenv('SQL_ENGINE'),
+        'NAME': os.getenv('SQL_DB'),
+        'USER': os.getenv('SQL_USER'),
+        'PASSWORD': os.getenv('SQL_PASSWORD'),
+        'HOST': os.getenv('SQL_HOST'),
+        'PORT': int(os.getenv('SQL_PORT')),
     }
 }
 
-if os.environ.get("MONGO_CLUSTER_URL"):
-    connect(
-        host=os.environ.get("MONGO_CLUSTER_URL"),
-    )
-
-if not os.environ.get("MONGO_CLUSTER_URL"):
-    connect(
-        db=os.environ.get('MONGO_DATABASE_NAME', dev_db.MONGO_DATABASE_NAME),
-        username=os.environ.get('MONGO_USERNAME', dev_db.MONGO_USERNAME),
-        password=os.environ.get('MONGO_PASSWORD', dev_db.MONGO_PASSWORD),
-        host=os.environ.get('MONGO_HOST', dev_db.MONGO_HOST),
-        port=int(os.environ.get('MONGO_PORT', dev_db.MONGO_PORT)),
-        authentication_source='admin',
-    )
+connect(
+    host=os.environ.get("MONGO_CLUSTER_URL"),
+)
 
 AUTH_PASSWORD_VALIDATORS = [
     {

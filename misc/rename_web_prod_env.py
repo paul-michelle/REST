@@ -1,4 +1,7 @@
 DEBUG = 0
+
+SENTRY_TRACES_SAMPLE_RATE = 1.0
+
 SECRET_KEY = "_______GENERATE_ME_WITH_THE_FUNCTION_BELOW________"
 ALLOWED_HOSTS = "example.com www.example.com"
 CSRF_TRUSTED_ORIGINS = "http://example.com"
@@ -14,11 +17,7 @@ SQL_DB = ""
 SQL_HOST = ""
 SQL_PORT = ""
 
-MONGO_DATABASE_NAME = ""
-MONGO_HOST = ""
-MONGO_PORT = ""
-MONGO_USERNAME = ""
-MONGO_PASSWORD = ""
+MONGO_CLUSTER_URL = "mongodb+srv://<name>:<password>@<cluster>.mongodb.net/<database>retryWrites=true&w=majority"
 
 EMAIL_HOST_USER = "administrative back-end email to send messages from"
 EMAIL_HOST_PASSWORD = "password to this email account"
