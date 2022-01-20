@@ -61,7 +61,6 @@ services:
     depends_on:
       - redis
 
-
   celery_beat:
     env_file:
       - web_prod.env
