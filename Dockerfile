@@ -9,6 +9,8 @@ COPY ./requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/web/wheels -r requirements.txt
 
 FROM python:3.9.6-alpine
+ENV PYTHONFONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
 RUN mkdir -p /home/street_food
 

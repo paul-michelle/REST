@@ -49,6 +49,7 @@ def upsert_ticket(request, developer_requested: Optional[Developer] = None,
             serializer_nosql = DeveloperSerializer(data=developer_sent_info)
         if developer_sent_info['github_account'] == developer_requested['github_account']:
             serializer_nosql = DeveloperSerializer(data=developer_sent_info, instance=developer_requested)
+
         serializer_sql = TicketSerializer(data=request.data, instance=ticket_requested)
 
     if not ticket_requested:
@@ -60,9 +61,12 @@ def upsert_ticket(request, developer_requested: Optional[Developer] = None,
 
     if serializer_sql.is_valid() and serializer_nosql.is_valid():
         serializer_sql.save(assigned_to=developer_sent_info['github_account'])
-        try:
-            Developer.objects.get(github_account=developer_sent_info['github_account'])
-        except DoesNotExist:
+        if not ticket_requested:
+            try:
+                Developer.objects.get(github_account=developer_sent_info['github_account'])
+            except DoesNotExist:
+                serializer_nosql.save()
+        if ticket_requested:
             serializer_nosql.save()
 
         ticket_data = merge_data(serializer_sql, serializer_nosql)
