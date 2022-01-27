@@ -8,7 +8,17 @@ from rest_framework_mongoengine.serializers import DocumentSerializer
 SPRINT_POINTS_CEILING = 10
 
 
-class TicketSerializer(serializers.ModelSerializer):
+class DeveloperSerializer(DocumentSerializer):
+    """Developer Details"""
+
+    class Meta:
+        model = Developer
+        fields = ['first_name', 'github_account', 'stack', 'hobbies']
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    points = serializers.IntegerField(validators=[lambda x: x >= 0])
+
     class Meta:
         model = Ticket
         fields = ['id', 'created', 'title', 'description', 'points']
@@ -23,8 +33,11 @@ class TicketSerializer(serializers.ModelSerializer):
         return attrs
 
 
-class DeveloperSerializer(DocumentSerializer):
+class TicketSerializer(TaskSerializer):
+    """Ticket Details"""
+
+    assigned_to = DeveloperSerializer()
+
     class Meta:
-        model = Developer
-        fields = ['first_name', 'github_account', 'stack', 'hobbies']
-        depth = 1
+        model = Ticket
+        fields = ['title', 'description', 'points', 'assigned_to']

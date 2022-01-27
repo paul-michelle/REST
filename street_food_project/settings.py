@@ -3,13 +3,6 @@ from mongoengine import connect
 from sentry_sdk import init as sentry_sdk_init
 from sentry_sdk.integrations.django import DjangoIntegration
 
-sentry_sdk_init(
-    dsn="https://d56e9fae059c433e97bf1b45d0660fd8@o1122018.ingest.sentry.io/6159210",
-    integrations=[DjangoIntegration()],
-    traces_sample_rate=float(os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "1.0")),
-    send_default_pii=True
-)
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEV_SECRET_KEY = "ta=]/}1]z'#nl]$%%!}wb'y.9{+|q$m`8|iubxi~`..[i>nhdd"
@@ -31,7 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    'rest_framework_swagger',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
     'rest_framework',
     'rest_framework_mongoengine',
     'django_celery_beat',
@@ -84,7 +78,16 @@ TEMPLATES = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [],
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Endpoints available',
+    'DESCRIPTION': 'Project description',
+    'VERSION': '1.0.0',
+    'SWAGGER_UI_DIST': 'SIDECAR',
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
 }
 
 WSGI_APPLICATION = 'street_food_project.wsgi.application'
@@ -149,3 +152,11 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
 SITE_ID = 1
+
+if not DEBUG:
+    sentry_sdk_init(
+        dsn="https://d56e9fae059c433e97bf1b45d0660fd8@o1122018.ingest.sentry.io/6159210",
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=float(os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "1.0")),
+        send_default_pii=True
+    )

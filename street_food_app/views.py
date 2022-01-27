@@ -1,19 +1,21 @@
 from typing import List, Optional
 import rest_framework.response
 import rest_framework.request
+from django.db import transaction
+from rest_framework import status
+from rest_framework.decorators import api_view
 from mongoengine.errors import DoesNotExist
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
-from rest_framework import status
-from rest_framework.decorators import api_view
-
+from drf_spectacular.utils import extend_schema
 from street_food_app.datatypes import (
     TicketInfo,
 )
 
 from street_food_app.serializers import (
-    TicketSerializer,
+    TaskSerializer,
     DeveloperSerializer,
+    TicketSerializer
 )
 
 from street_food_app.models import (
@@ -22,7 +24,7 @@ from street_food_app.models import (
 )
 
 
-def merge_data(sql: TicketSerializer, nosql: DeveloperSerializer) -> TicketInfo:
+def merge_data(sql: TaskSerializer, nosql: DeveloperSerializer) -> TicketInfo:
     developer_data = {"assigned_to": nosql.data}
     ticket_data = sql.data
     ticket_data.update(developer_data)
@@ -50,10 +52,10 @@ def upsert_ticket(request, developer_requested: Optional[Developer] = None,
         if developer_sent_info['github_account'] == developer_requested['github_account']:
             serializer_nosql = DeveloperSerializer(data=developer_sent_info, instance=developer_requested)
 
-        serializer_sql = TicketSerializer(data=request.data, instance=ticket_requested)
+        serializer_sql = TaskSerializer(data=request.data, instance=ticket_requested)
 
     if not ticket_requested:
-        serializer_sql = TicketSerializer(data=request.data)
+        serializer_sql = TaskSerializer(data=request.data)
         serializer_nosql = DeveloperSerializer(data=developer_sent_info)
 
     serializer_sql.is_valid()
@@ -76,7 +78,13 @@ def upsert_ticket(request, developer_requested: Optional[Developer] = None,
     return rest_framework.response.Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(
+    request=TicketSerializer,
+    responses={201: TicketSerializer}
+
+)
 @api_view(['GET', 'POST'])
+@transaction.atomic
 def ticket_list_all_or_create_one(request: HttpRequest) -> rest_framework.response.Response:
     request: rest_framework.request.Request
 
@@ -90,7 +98,7 @@ def ticket_list_all_or_create_one(request: HttpRequest) -> rest_framework.respon
         there_are_tickets = Ticket.objects.count()
         if there_are_tickets:
             for ticket in Ticket.objects.all():
-                serializer_sql = TicketSerializer(ticket)
+                serializer_sql = TaskSerializer(ticket)
                 try:
                     developer_info = Developer.objects.get(github_account=ticket.assigned_to)
                 except DoesNotExist:
@@ -102,9 +110,14 @@ def ticket_list_all_or_create_one(request: HttpRequest) -> rest_framework.respon
         return rest_framework.response.Response(data=data, status=status.HTTP_200_OK)
 
 
+@extend_schema(
+    request=TicketSerializer
+)
 @api_view(['GET', 'PUT', 'DELETE'])
+@transaction.atomic
 def ticket_read_update_delete_one(request: HttpRequest, pk: int) -> rest_framework.response.Response:
     request: rest_framework.request.Request
+
     try:
         ticket_requested = Ticket.objects.get(id=pk)
     except ObjectDoesNotExist:
@@ -118,7 +131,7 @@ def ticket_read_update_delete_one(request: HttpRequest, pk: int) -> rest_framewo
         return rest_framework.response.Response(status=status.HTTP_204_NO_CONTENT)
 
     if request.method == 'GET':
-        serialized_ticket = TicketSerializer(ticket_requested)
+        serialized_ticket = TaskSerializer(ticket_requested)
         serialized_developer = DeveloperSerializer(developer_requested)
         ticket_data = merge_data(serialized_ticket, serialized_developer)
         return rest_framework.response.Response(data=ticket_data, status=status.HTTP_200_OK)

@@ -17,6 +17,6 @@ echo "Creating a superuser"
 echo "from django.contrib.auth import get_user_model;\
   User = get_user_model();\
   User.objects.create_superuser('$ADMIN_NAME','$ADMIN_EMAIL', '$ADMIN_PASSWORD')" |
-  python manage.py shell
+  python manage.py shell 2 > /dev/null
 
 exec "$@"

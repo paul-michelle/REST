@@ -6,4 +6,8 @@ venv/
 *.pyc
 __pycache__
 
-db.sqlite3
+kubernetes
+mediafiles
+staticfiles
+
+street_food_app/migrations

@@ -15,7 +15,9 @@ services:
       - web
 
   web:
-    image: lieberpaul/tickets:mongoCluster
+    build:
+      context: .
+      dockerfile: Dockerfile
     env_file:
       - ./web_dev.env
     entrypoint: [ "sh", "/home/street_food/web/entrypoint.dev.sh" ]
@@ -23,6 +25,7 @@ services:
     expose:
       - 8000
     volumes:
+      - ./:/home/street_food/web
       - static_volume:/home/street_food/web/staticfiles
       - media_volume:/home/street_food/web/mediafiles
     depends_on:
@@ -44,7 +47,11 @@ services:
     image: redis:6.0-alpine3.14
 
   celery:
-    image: lieberpaul/tickets:mongoCluster
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/home/street_food/web
     env_file:
       - ./web_dev.env
     restart: always
@@ -52,7 +59,11 @@ services:
 
 
   celery_beat:
-    image: lieberpaul/tickets:mongoCluster
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/home/street_food/web
     env_file:
       - ./web_dev.env
     restart: always

@@ -1,11 +1,21 @@
 from django.contrib import admin
-from django.urls import path, include, re_path
-from rest_framework_swagger.views import get_swagger_view
-
-schema_view = get_swagger_view(title='Simple API')
+from django.urls import (
+    path,
+    include
+)
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('street_food_app.urls')),
-    re_path(r'^swagger/', schema_view)
+]
+
+urlpatterns += [
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
