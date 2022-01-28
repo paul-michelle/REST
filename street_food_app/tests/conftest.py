@@ -1,15 +1,16 @@
+import os
 import pytest
 
 
-@pytest.fixture()
-def generate_ticket(request):
+@pytest.fixture(autouse=False)
+def generate_sample_ticket(request):
     ticket = {
         "title": "DB Ticket",
         "description": "Ticket Description",
         "points": 1,
         "assigned_to": {
-            "first_name": "Mr.A.N.Other",
-            "github_account": "https://github.com/mr-a-n-other",
+            "first_name": "A.N.Other",
+            "github_account": f"https://github.com/",
             "stack": [
                 {
                     "language_name": "C++",
@@ -23,3 +24,8 @@ def generate_ticket(request):
         }
     }
     yield ticket
+
+
+@pytest.fixture(autouse=False)
+def roll_back_transaction(request):
+    os.system('python manage.py flush_tickets')
