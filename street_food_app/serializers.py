@@ -4,6 +4,7 @@ from street_food_app.models import (
 )
 from rest_framework import serializers
 from rest_framework_mongoengine.serializers import DocumentSerializer
+from .validators import valid_points_count
 
 SPRINT_POINTS_CEILING = 10
 
@@ -17,7 +18,7 @@ class DeveloperSerializer(DocumentSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    points = serializers.IntegerField(validators=[lambda x: x >= 0])
+    points = serializers.IntegerField(validators=[valid_points_count])
 
     class Meta:
         model = Ticket

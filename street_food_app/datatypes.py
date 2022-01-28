@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Optional, Dict
 from datetime import datetime
 from dataclasses import dataclass
 
 Url = str
-
+ErrorInfo = Dict[Optional[str], Optional[str]]
 
 @dataclass
 class ExpertiseInfo:
