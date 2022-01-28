@@ -18,7 +18,7 @@ from .views_utils import (
 
 class TicketsListOrCreate(ListCreateAPIView):
     def get_serializer_class(self):
-        pass
+        return TicketSerializer
 
     def get_queryset(self):
         pass
@@ -40,7 +40,7 @@ class TicketsListOrCreate(ListCreateAPIView):
 
 class TicketsGetUpdateDelete(RetrieveUpdateDestroyAPIView):
     def get_serializer_class(self):
-        pass
+        return TicketSerializer
 
     def get_queryset(self):
         pass

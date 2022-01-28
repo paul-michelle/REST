@@ -1,3 +1,6 @@
+import json
+import sys
+
 import pytest
 from street_food_app.views import (
     TicketsListOrCreate,
@@ -17,5 +20,5 @@ def test_ticket_is_written_correctly(generate_ticket):
         format='json'
     )
     response = TicketsListOrCreate.as_view()(post_request)
-    print(response)
+    sys.stdout.write(f'response is {response.data}')
     assert response.status_code == 201
