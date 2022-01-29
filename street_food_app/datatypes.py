@@ -5,6 +5,7 @@ from dataclasses import dataclass
 Url = str
 ErrorInfo = Dict[Optional[str], Optional[str]]
 
+
 @dataclass
 class ExpertiseInfo:
     language_name: str

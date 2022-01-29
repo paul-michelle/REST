@@ -1,3 +1,5 @@
+import os
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from mongoengine.errors import OperationError
@@ -9,7 +11,7 @@ from street_food_app.models import (
 
 
 class Command(BaseCommand):
-    help = 'Removes all data on Tickets BOTH from PostgreSQL and MongoDB databases'
+    help = 'Removes all data on Tickets BOTH from PostgreSQL (resetting the pk sequence) and MongoDB databases'
 
     def _get_tickets_count(self):
         try:
@@ -36,6 +38,7 @@ class Command(BaseCommand):
     @staticmethod
     def _remove_info_on_tickets():
         Ticket.objects.all().delete()
+        os.system('python manage.py sqlsequencereset street_food_app')
 
     @staticmethod
     def _remove_docs_on_developers():

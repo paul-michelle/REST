@@ -1,9 +1,9 @@
-import os
 import pytest
+from street_food_app.models import Developer
 
 
-@pytest.fixture(autouse=False)
-def generate_sample_ticket(request):
+@pytest.fixture
+def testing_ticket():
     ticket = {
         "title": "DB Ticket",
         "description": "Ticket Description",
@@ -23,9 +23,11 @@ def generate_sample_ticket(request):
             ]
         }
     }
-    yield ticket
+    return ticket
 
 
-@pytest.fixture(autouse=False)
-def roll_back_transaction(request):
-    os.system('python manage.py flush_tickets')
+@pytest.fixture()
+def sample_ticket(testing_ticket):
+    sample_ticket = testing_ticket
+    yield sample_ticket
+    Developer.objects.all().delete()
