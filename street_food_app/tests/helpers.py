@@ -58,3 +58,25 @@ def write_random_n_tickets_and_pick_up_one_out_of_sent_tickets(sample_ticket: Ti
     pseudo_randomly_chosen_index = random.randint(0, tickets_to_send_random_count - 1)
     one_of_tickets_sent = tickets_to_send[pseudo_randomly_chosen_index]
     return one_of_tickets_sent, pseudo_randomly_chosen_index
+
+
+def update_ticket(id_: int, upd_data: TicketInfo) -> Response:
+    put_request = request_factory.put(
+        path=reverse(
+            viewname='tickets_get_update_delete_one',
+            kwargs={"pk": id_}
+        ),
+        data=upd_data,
+        format='json'
+    )
+    return TicketsGetUpdateDelete.as_view()(put_request, pk=id_)
+
+
+def delete_ticket(id_: int) -> Response:
+    delete_request = request_factory.delete(
+        path=reverse(
+            viewname='tickets_get_update_delete_one',
+            kwargs={"pk": id_}
+        )
+    )
+    return TicketsGetUpdateDelete.as_view()(delete_request, pk=id_)

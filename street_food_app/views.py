@@ -62,7 +62,7 @@ class TicketsGetUpdateDelete(RetrieveUpdateDestroyAPIView):
         ticket_data, errors = results
         if errors:
             return rest_framework.response.Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
-        return rest_framework.response.Response(status=status.HTTP_200_OK)
+        return rest_framework.response.Response(data=ticket_data, status=status.HTTP_200_OK)
 
     @extend_schema(responses=TicketSerializer)
     @transaction.atomic

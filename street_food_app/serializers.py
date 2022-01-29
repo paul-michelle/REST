@@ -7,6 +7,7 @@ from rest_framework_mongoengine.serializers import DocumentSerializer
 from .validators import valid_points_count
 
 SPRINT_POINTS_CEILING = 10
+NUMBER_OF_DEVELOPERS = 2
 
 
 class DeveloperSerializer(DocumentSerializer):
@@ -29,7 +30,7 @@ class TaskSerializer(serializers.ModelSerializer):
         points = 0
         for ticket in Ticket.objects.all():
             points += ticket.points
-            if points >= SPRINT_POINTS_CEILING:
+            if points > SPRINT_POINTS_CEILING * NUMBER_OF_DEVELOPERS:
                 raise serializers.ValidationError('Points upper limit for the current sprint reached')
         return attrs
 
