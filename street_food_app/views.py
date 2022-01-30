@@ -1,6 +1,7 @@
 import rest_framework.response
 import rest_framework.request
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
@@ -17,6 +18,8 @@ from .views_utils import (
 
 
 class TicketsListOrCreate(ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
+
     def get_serializer_class(self):
         return TicketSerializer
 
@@ -39,6 +42,8 @@ class TicketsListOrCreate(ListCreateAPIView):
 
 
 class TicketsGetUpdateDelete(RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+
     def get_serializer_class(self):
         return TicketSerializer
 

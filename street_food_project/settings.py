@@ -24,13 +24,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    'drf_spectacular',
-    'drf_spectacular_sidecar',
+    'django_extensions',
+    'django_celery_beat',
     'rest_framework',
     'rest_framework_mongoengine',
-    'django_celery_beat',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
 
-    'street_food_app.apps.StreetFoodAppConfig',
+    'street_food_app',
+    'authentication',
 ]
 
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
@@ -78,7 +80,7 @@ TEMPLATES = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [],
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SPECTACULAR_SETTINGS = {
@@ -127,11 +129,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 STATIC_URL = 'static/'
@@ -160,3 +159,5 @@ if not DEBUG:
         traces_sample_rate=float(os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "1.0")),
         send_default_pii=True
     )
+
+AUTH_USER_MODEL = 'authentication.User'

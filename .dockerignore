@@ -2,7 +2,6 @@
 *.yaml
 *.yml
 data/
-rename*
 Dockerfile
 
 venv/

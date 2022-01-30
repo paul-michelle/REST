@@ -9,5 +9,3 @@ __pycache__
 kubernetes
 mediafiles
 staticfiles
-
-street_food_app/migrations
